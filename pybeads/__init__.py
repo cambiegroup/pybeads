@@ -48,10 +48,10 @@ def beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None):
     EPS0 = 1e-6  # cost smoothing parameter for x (small positive value)
     EPS1 = 1e-6  # cost smoothing parameter for derivatives(small positive value)
 
-    if pen is 'L1_v1':
+    if pen == 'L1_v1':
         phi = lambda xx: np.sqrt(np.power(abs(xx), 2) + EPS1)
         wfun = lambda xx: 1. / np.sqrt(np.power(abs(xx), 2) + EPS1)
-    elif pen is 'L1_v2':
+    elif pen == 'L1_v2':
         phi = lambda xx: abs(xx) - EPS1 * np.log(abs(xx) + EPS1)
         wfun = lambda xx: 1. / (abs(xx) + EPS1)
     else:
