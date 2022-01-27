@@ -139,67 +139,9 @@ def linv(a, b):
     '''
     return spsolve(a.tocsc(), b).reshape(len(b), 1)
 
+
 def make_diff_matrices(N):
     D1 = diags([-1, 1], [0, 1], shape=(N - 1, N))
     D2 = diags([1, -2, 1], [0, 1, 2], shape=(N - 2, N))
 
     return D1, D2
-
-
-if __name__ == '__main__':
-    import pybeads as be
-    import numpy as np
-    import matplotlib.pyplot as plt
-
-    plt.rcParams['figure.facecolor'] = 'w'
-
-
-    def sigmoid(x):
-        return 1 / (1 + np.exp(-x))
-    # Eight chromatograms with different background levels look like this
-    data = np.genfromtxt('../sample_data/chromatograms_and_noise.csv', skip_header=4, delimiter=',')
-    fig, axes = plt.subplots(1, 2, figsize=(15, 4))
-    for i in range(8):
-        axes[0].plot(data[:, i], label=i)
-        axes[1].plot(data[:, i], '.-', label=i)
-    axes[1].set_ylim(0, 100)
-    axes[1].set_xlim(1500, 3500)
-    axes[1].legend(ncol=4)
-
-    # We are going to use forth data + noise
-    y = data[:, 3] + data[:, 8]
-    print(y.shape)
-    fig, axes = plt.subplots(1, 2, figsize=(15, 3))
-    axes[0].plot(y)
-    axes[1].plot(y)
-    axes[1].set_ylim(-10, 200)
-
-    # It takes 450 ms for 4000 data points.
-    fc = 0.006
-    d = 1
-    r = 6
-    amp = 0.8
-    lam0 = 0.5 * amp
-    lam1 = 5 * amp
-    lam2 = 4 * amp
-    Nit = 15
-    pen = 'L1_v2'
-
-    import timeit
-    import statistics
-
-    def callable():
-        be.beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None)
-
-
-    # import cProfile
-    # cProfile.run("callable()")
-    a = timeit.repeat(callable, number=10, repeat=10)
-    print(a)
-    print(sum(a)/len(a))
-    print(statistics.stdev(a))
-
-    # signal_est, bg_est = be.beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None)
-
-    # Repeat this line because timeit command does not save the ouputs.
-    # signal_est, bg_est = be.beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None)
