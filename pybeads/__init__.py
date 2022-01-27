@@ -55,9 +55,9 @@ def beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None):
     else:
         ValueError('penalty must be L1_v1, L1_v2')
 
-    y = np.reshape(a=y, newshape=(len(y), 1))
-    x = y
     N = len(y)
+    y.resize([N, 1])
+    x = y
     A, B = BAfilt(d, fc, N)
     H = lambda xx: B.dot(linv(A, xx))
     D1, D2 = make_diff_matrices(N)
@@ -71,7 +71,7 @@ def beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None):
     gamma = np.ones((N, 1))
 
     for _ in range(Nit):
-        if type(conv) is int:
+        if isinstance(conv, int):
             diff = np.convolve(D.dot(x.squeeze()), np.ones(conv)/conv, mode='same')[:, np.newaxis]
         else:
             diff = D.dot(x)
@@ -85,9 +85,6 @@ def beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None):
 
         M = 2 * lam0 * Gamma + (D.transpose().dot(Lmda)).dot(D).transpose()
         x = A.dot(linv(BTB + A.transpose().dot(M.dot(A)), d))
-
-        # a = y - x
-        pass
 
     f = y - x - H(y - x)
 
@@ -121,7 +118,7 @@ def BAfilt(d, fc, N):
     t = np.power(((1 - np.cos(omc)) / (1 + np.cos(omc))), d)
 
     a = 1
-    for _ in range(d):  # for i = 1:d
+    for _ in range(d):
         a = np.convolve(a=a, v=[1, 2, 1])
     
     a = b + t * a
