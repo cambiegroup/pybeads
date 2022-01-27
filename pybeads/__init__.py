@@ -49,18 +49,11 @@ def beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None):
     EPS1 = 1e-6  # cost smoothing parameter for derivatives(small positive value)
 
     if pen == 'L1_v1':
-        # phi = lambda xx: np.sqrt(np.power(abs(xx), 2) + EPS1)
-        wfun = lambda xx: 1. / np.sqrt(np.power(abs(xx), 2) + EPS1)
+        wfun = lambda xx: 1 / np.sqrt(np.power(abs(xx), 2) + EPS1)
     elif pen == 'L1_v2':
-        # phi = lambda xx: abs(xx) - EPS1 * np.log(abs(xx) + EPS1)
-        wfun = lambda xx: 1. / (abs(xx) + EPS1)
+        wfun = lambda xx: 1 / (abs(xx) + EPS1)
     else:
         ValueError('penalty must be L1_v1, L1_v2')
-    
-    #  equation (25)
-    # theta = lambda xx: sum(xx[(xx > EPS0)]) - r * sum(xx[(xx < -EPS0)]) \
-    #                    + sum((1+r)/(4*EPS0) * xx[abs(xx) <= EPS0] ** 2 \
-    #                    + (1-r)/2 * xx[abs(xx) <= EPS0] + EPS0*(1+r)/4)
 
     y = np.reshape(a=y, newshape=(len(y), 1))
     x = y
@@ -119,7 +112,7 @@ def BAfilt(d, fc, N):
     """
 
     b1 = [1, -1]
-    for i in range(1, d):
+    for _ in range(1, d):
         b1 = np.convolve(a=b1, v=[-1, 2, -1])
 
     b = np.convolve(a=b1, v=[-1, 1])
@@ -128,7 +121,7 @@ def BAfilt(d, fc, N):
     t = np.power(((1 - np.cos(omc)) / (1 + np.cos(omc))), d)
 
     a = 1
-    for i in range(1, d+1):  # for i = 1:d
+    for _ in range(d):  # for i = 1:d
         a = np.convolve(a=a, v=[1, 2, 1])
     
     a = b + t * a
