@@ -64,7 +64,6 @@ def beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None):
 
     y = np.reshape(a=y, newshape=(len(y), 1))
     x = y
-    cost = []
     N = len(y)
     A, B = BAfilt(d, fc, N)
     H = lambda xx: B.dot(linv(A, xx))
@@ -78,8 +77,7 @@ def beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None):
 
     gamma = np.ones((N, 1))
 
-    for i in range(1, Nit+1):
-        # print('step: ', i)
+    for _ in range(Nit):
         if type(conv) is int:
             diff = np.convolve(D.dot(x.squeeze()), np.ones(conv)/conv, mode='same')[:, np.newaxis]
         else:
@@ -96,16 +94,12 @@ def beads(y, d, fc, r, Nit, lam0, lam1, lam2, pen, conv=None):
         x = A.dot(linv(BTB + A.transpose().dot(M.dot(A)), d))
 
         a = y - x
-        cost.append(
-            0.5 * sum(abs(H(a)) ** 2)
-            + lam0 * theta(x)
-            + lam1 * sum(phi(np.diff(x.squeeze())))
-            + lam2 * sum(phi(np.diff(x.squeeze(), 2))))
         pass
 
     f = y - x - H(y - x)
 
-    return x.squeeze(), f.squeeze(), cost
+    return x.squeeze(), f.squeeze()
+
 
 def BAfilt(d, fc, N):
     """
